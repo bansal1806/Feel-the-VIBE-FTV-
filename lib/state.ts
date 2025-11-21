@@ -1,6 +1,6 @@
 export type Intent = 'collab' | 'study' | 'social' | 'dating' | 'mentor'
 export type GlobalSlice = {
-  mood: 'focus' | 'chill'
+  mood: 'focus' | 'chill' | 'social' | 'creative'
   credits: number
   intents: Intent[]
   seeking: string[]
