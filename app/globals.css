@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter',
+      'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    @apply dark:bg-black-pure dark:text-white;
+    @apply bg-cream-pure text-gray-900;
+  }
+  
+  html {
+    @apply dark:bg-black-pure;
+    @apply bg-cream-pure;
+  }
+}
+
+@layer utilities {
+  /* Neon glass effect */
+  .glass {
+    @apply backdrop-blur-xl shadow-lg;
+    @apply bg-black-deep/90 border border-white/10 dark:bg-black-deep/90 dark:border-white/10;
+    @apply bg-cream-soft/90 border border-gray-300/50;
+  }
+  
+  .glass-neon {
+    @apply backdrop-blur-xl;
+    @apply bg-black-deep/80 border border-neon-cyan/30 shadow-neon-cyan/20 dark:bg-black-deep/80 dark:border-neon-cyan/30 dark:shadow-neon-cyan/20;
+    @apply bg-cream-warm/80 border border-amber-300/40 shadow-amber-200/20;
+  }
+  
+  /* Neon text gradients */
+  .gradient-text {
+    @apply bg-gradient-to-r from-neon-green via-neon-cyan to-neon-blue bg-clip-text text-transparent font-semibold;
+  }
+  
+  .gradient-text-pink {
+    @apply bg-gradient-to-r from-neon-pink via-neon-purple to-neon-pink bg-clip-text text-transparent font-semibold;
+  }
+  
+  .gradient-text-yellow {
+    @apply bg-gradient-to-r from-neon-yellow via-neon-green to-neon-cyan bg-clip-text text-transparent font-semibold;
+  }
+  
+  /* Neon gradients */
+  .neon-gradient-green-blue {
+    @apply bg-gradient-to-r from-neon-green to-neon-blue;
+  }
+  
+  .neon-gradient-pink-purple {
+    @apply bg-gradient-to-r from-neon-pink to-neon-purple;
+  }
+  
+  .neon-gradient-cyan-yellow {
+    @apply bg-gradient-to-r from-neon-cyan to-neon-yellow;
+  }
+  
+  /* Legacy support */
+  .professional-gradient {
+    @apply bg-gradient-to-r from-neon-blue to-neon-cyan;
+  }
+  
+  .professional-gradient-light {
+    @apply bg-gradient-to-br from-black-deep to-black-pure;
+  }
+  
+  /* Neon glow effects */
+  .neon-glow-green {
+    box-shadow: 0 0 10px #00FF6A, 0 0 20px #00FF6A, 0 0 30px #00FF6A;
+  }
+  
+  .neon-glow-blue {
+    box-shadow: 0 0 10px #00D0FF, 0 0 20px #00D0FF, 0 0 30px #00D0FF;
+  }
+  
+  .neon-glow-pink {
+    box-shadow: 0 0 10px #FF2EC4, 0 0 20px #FF2EC4, 0 0 30px #FF2EC4;
+  }
+  
+  .neon-glow-purple {
+    box-shadow: 0 0 10px #B400FF, 0 0 20px #B400FF, 0 0 30px #B400FF;
+  }
+  
+  .neon-glow-cyan {
+    box-shadow: 0 0 10px #00FFF0, 0 0 20px #00FFF0, 0 0 30px #00FFF0;
+  }
+  
+  .neon-glow-yellow {
+    box-shadow: 0 0 10px #FFEB3B, 0 0 20px #FFEB3B, 0 0 30px #FFEB3B;
+  }
+  
+  /* Card shadows */
+  .card-shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 255, 106, 0.1), 0 1px 2px 0 rgba(0, 255, 106, 0.06);
+  }
+  
+  .card-shadow-hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 255, 106, 0.2), 0 2px 4px -1px rgba(0, 255, 106, 0.1);
+  }
+  
+  .swipe-card {
+    touch-action: pan-y;
+  }
+  
+  /* Cyberpunk-lite effects */
+  .cyber-border {
+    @apply border border-neon-cyan/30;
+    box-shadow: 
+      inset 0 0 10px rgba(0, 255, 240, 0.1),
+      0 0 20px rgba(0, 255, 240, 0.1);
+  }
+  
+  .neon-outline {
+    @apply border-2 border-neon-green;
+    box-shadow: 
+      0 0 5px #00FF6A,
+      0 0 10px #00FF6A,
+      inset 0 0 5px #00FF6A;
+  }
+  
+  /* Frosted glass panels */
+  .frosted-panel {
+    @apply backdrop-blur-2xl;
+    @apply bg-black-deep/60 border border-white/5 dark:bg-black-deep/60 dark:border-white/5;
+    @apply bg-cream-soft/60 border border-gray-300/30;
+    box-shadow: 
+      0 8px 32px 0 rgba(0, 0, 0, 0.37),
+      inset 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Theme-aware background */
+  .bg-theme {
+    @apply bg-black-pure dark:bg-black-pure;
+    @apply bg-cream-pure;
+  }
+  
+  .bg-theme-deep {
+    @apply bg-black-deep dark:bg-black-deep;
+    @apply bg-cream-deep;
+  }
+  
+  /* Theme-aware text */
+  .text-theme {
+    @apply text-white dark:text-white;
+    @apply text-gray-900;
+  }
+  
+  .text-theme-muted {
+    @apply text-white/60 dark:text-white/60;
+    @apply text-gray-600;
+  }
+
+  /* Safe area padding for bottom nav overlap */
+  .pb-safe {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  
+  /* AR Radar pulse */
+  .radar-pulse {
+    animation: radarPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes radarPulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes gridMove {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(50px, 50px);
+    }
+  }
+
+  .animate-grid-move {
+    animation: gridMove 20s linear infinite;
+  }
+}
