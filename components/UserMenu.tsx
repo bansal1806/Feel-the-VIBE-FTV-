@@ -10,7 +10,7 @@ interface UserMenuProps {
   user?: {
     id: string
     email: string
-    alias: string
+    alias?: string
     name?: string | null
     avatarUrl?: string | null
   }
@@ -85,7 +85,7 @@ export default function UserMenu({ user }: UserMenuProps) {
         .join('')
         .toUpperCase()
         .slice(0, 2)
-    : user.alias.slice(0, 2).toUpperCase()
+    : (user.alias || user.email.split('@')[0]).slice(0, 2).toUpperCase()
 
   if (!mounted) {
     return (
@@ -97,7 +97,7 @@ export default function UserMenu({ user }: UserMenuProps) {
           {user.avatarUrl ? (
             <img
               src={user.avatarUrl}
-              alt={user.alias}
+              alt={user.alias || user.email}
               className="h-8 w-8 rounded-full"
             />
           ) : (
@@ -122,7 +122,7 @@ export default function UserMenu({ user }: UserMenuProps) {
           {user.avatarUrl ? (
             <img
               src={user.avatarUrl}
-              alt={user.alias}
+              alt={user.alias || user.email}
               className="h-8 w-8 rounded-full"
             />
           ) : (
