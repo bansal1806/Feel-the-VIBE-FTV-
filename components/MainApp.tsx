@@ -18,12 +18,12 @@ import { adSlots, featureFlags } from '@/lib/config'
 import { useFeed, type FeedItem } from '@/lib/hooks/useFeed'
 import { SwipeDirection, SwipeTargetType } from '@/lib/types/swipe'
 
-type ChecklistState = {
-  connect: boolean
-  rsvp: boolean
-  join: boolean
-  dismissed: boolean
-}
+// type ChecklistState = {
+//   connect: boolean
+//   rsvp: boolean
+//   join: boolean
+//   dismissed: boolean
+// }
 
 // Checklist component - commented out for now
 // function Checklist() {
