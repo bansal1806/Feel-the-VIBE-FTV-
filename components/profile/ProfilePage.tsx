@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Save, Sparkles, Eye, EyeOff, CheckCircle2, Shield } from 'lucide-react'
+import { Save, Sparkles, EyeOff, CheckCircle2, Shield } from 'lucide-react'
 import { useProfile } from '@/lib/hooks/useProfile'
 import { useConnections, getTrustStage } from '@/lib/hooks/useConnections'
 import { bus } from '@/lib/bus'
@@ -168,7 +168,7 @@ export default function ProfilePage() {
     },
   })
 
-  const handleUpdate = (field: keyof ProfileFormData, value: any) => {
+  const handleUpdate = (field: keyof ProfileFormData, value: ProfileFormData[keyof ProfileFormData]) => {
     setForm((current) => (current ? { ...current, [field]: value } : null))
   }
 

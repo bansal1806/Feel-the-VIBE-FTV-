@@ -259,7 +259,7 @@ function CreateDialog({ open, onClose }: { open: boolean; onClose: () => void })
       setTagInput('')
       onClose()
       bus.emit('toast', { message: 'Timecapsule created successfully!' })
-    } catch (error) {
+    } catch {
       // Error handled by mutation
     }
   }

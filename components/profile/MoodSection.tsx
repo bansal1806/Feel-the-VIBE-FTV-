@@ -16,7 +16,7 @@ const MOOD_OPTIONS = [
 
 interface MoodSectionProps {
   form: ProfileFormData
-  onUpdate: (field: keyof ProfileFormData, value: any) => void
+  onUpdate: (field: keyof ProfileFormData, value: ProfileFormData[keyof ProfileFormData]) => void
   isEditing: boolean
 }
 
@@ -28,12 +28,12 @@ export function MoodSection({ form, onUpdate, isEditing }: MoodSectionProps) {
   if (!isEditing) {
     return (
       <ProfileSection icon={Lightbulb} title="Mood & Vibe Indicators" color="neon-purple">
-        <p className="text-sm text-white/80 italic">"{form.moodIndicator}"</p>
+        <p className="text-sm text-white/80 italic">&quot;{form.moodIndicator}&quot;</p>
       </ProfileSection>
     )
   }
 
-  const isCustomMood = form.moodIndicator && !MOOD_OPTIONS.includes(form.moodIndicator as any)
+  const isCustomMood = form.moodIndicator && !MOOD_OPTIONS.includes(form.moodIndicator as string)
 
   return (
     <ProfileSection icon={Lightbulb} title="Mood & Vibe Indicators (Optional)" color="neon-purple">

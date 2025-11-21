@@ -13,7 +13,7 @@ const HOBBIES = [
 
 interface HobbiesSectionProps {
   form: ProfileFormData
-  onUpdate: (field: keyof ProfileFormData, value: any) => void
+  onUpdate: (field: keyof ProfileFormData, value: ProfileFormData[keyof ProfileFormData]) => void
   isEditing: boolean
 }
 
@@ -108,7 +108,7 @@ export function HobbiesSection({ form, onUpdate, isEditing }: HobbiesSectionProp
         {form.hobbies && form.hobbies.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
             {form.hobbies
-              .filter(h => !HOBBIES.includes(h as any))
+              .filter(h => !HOBBIES.includes(h as string))
               .map(hobby => (
                 <span
                   key={hobby}

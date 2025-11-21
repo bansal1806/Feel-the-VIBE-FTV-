@@ -7,7 +7,7 @@ import type { ProfileFormData } from './types'
 
 interface BasicDetailsSectionProps {
   form: ProfileFormData
-  onUpdate: (field: keyof ProfileFormData, value: any) => void
+  onUpdate: (field: keyof ProfileFormData, value: ProfileFormData[keyof ProfileFormData]) => void
   isEditing: boolean
 }
 

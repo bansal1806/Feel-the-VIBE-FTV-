@@ -119,7 +119,7 @@ export default function HLRView() {
         tags: [],
       })
       bus.emit('toast', { message: 'Event created successfully!' })
-    } catch (error) {
+    } catch {
       // Error handled by mutation
     }
   }

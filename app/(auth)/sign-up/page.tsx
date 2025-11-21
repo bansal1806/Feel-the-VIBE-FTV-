@@ -71,7 +71,7 @@ export default function SignUpPage() {
 
   const handleResendOTP = async () => {
     setError(null)
-    await handleSendOTP(new Event('submit') as any)
+    await handleSendOTP(new Event('submit') as unknown as React.FormEvent)
   }
 
   return (
@@ -178,7 +178,7 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="text-sm text-neon-pink hover:text-neon-pink/80 transition disabled:opacity-50"
               >
-                Didn't receive code? Resend
+                Didn&apos;t receive code? Resend
               </button>
             </div>
 

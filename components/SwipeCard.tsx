@@ -93,8 +93,8 @@ function SwipeBadge({ intent }: { intent: 'like' | 'pass' }) {
 
 function UserCard({ item }: { item: Extract<FeedItem, { type: 'user' }> }) {
   const sharedTags = useMemo(() => [...item.sharedInterests, ...item.sharedIntents].slice(0, 6), [item])
-  const compatibilityColor =
-    item.compatibilityScore >= 80 ? 'from-emerald-400 to-green-500' : item.compatibilityScore >= 60 ? 'from-sky-400 to-blue-500' : 'from-amber-400 to-amber-500'
+  // const compatibilityColor =
+  //   item.compatibilityScore >= 80 ? 'from-emerald-400 to-green-500' : item.compatibilityScore >= 60 ? 'from-sky-400 to-blue-500' : 'from-amber-400 to-amber-500'
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-black-deep border border-neon-cyan/20">

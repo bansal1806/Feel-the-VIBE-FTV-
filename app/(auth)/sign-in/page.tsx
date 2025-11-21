@@ -16,7 +16,7 @@ export default function SignInPage() {
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [otpSent, setOtpSent] = useState(false)
+  const [, setOtpSent] = useState(false)
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,7 +75,7 @@ export default function SignInPage() {
 
   const handleResendOTP = async () => {
     setError(null)
-    await handleSendOTP(new Event('submit') as any)
+    await handleSendOTP(new Event('submit') as unknown as React.FormEvent)
   }
 
   return (
@@ -182,7 +182,7 @@ export default function SignInPage() {
                 disabled={loading}
                 className="text-sm text-neon-cyan hover:text-neon-cyan/80 transition disabled:opacity-50"
               >
-                Didn't receive code? Resend
+                Didn&apos;t receive code? Resend
               </button>
             </div>
 

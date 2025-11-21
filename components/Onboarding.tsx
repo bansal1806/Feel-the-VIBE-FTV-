@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Check, Mail, Lock, Sparkles, Users, MapPin, Calendar, Briefcase, User, Image } from 'lucide-react'
+import { ArrowRight, Check, Mail, Lock, Sparkles, Users, MapPin, Calendar } from 'lucide-react'
 
 interface OnboardingProps {
   onComplete: () => void
@@ -11,7 +11,7 @@ interface OnboardingProps {
 export default function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0)
   const [email, setEmail] = useState('')
-  const [alias, setAlias] = useState('')
+  const [, setAlias] = useState('')
   const [username, setUsername] = useState('')
   const [avatar, setAvatar] = useState('')
   const [bio, setBio] = useState('')

@@ -29,7 +29,7 @@ export default function AppShell({
   adSidebar,
 }: AppShellProps) {
   const { theme, toggleTheme } = useTheme()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string; email: string; name?: string } | null>(null)
 
   useEffect(() => {
     // Fetch current user session

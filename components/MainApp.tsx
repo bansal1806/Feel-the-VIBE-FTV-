@@ -3,11 +3,8 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Home, MapPin, MessageCircle, User, Flame, Radar, Shield } from 'lucide-react'
-import SwipeDeck from './SwipeDeck'
-import NowRoomsView from './NowRoomsView'
+import { Home, Flame, Radar, Shield } from 'lucide-react'
 import ChatView from './ChatView'
-import ProfileView from './ProfileView'
 import TimecapsulesView from './TimecapsulesView'
 import HLRView from './HLRView'
 import DualIdentityView from './DualIdentityView'
@@ -28,7 +25,7 @@ type ChecklistState = {
   dismissed: boolean
 }
 
-function Checklist() {
+function _Checklist() {
   const [state, setState] = React.useState<ChecklistState>(() => {
     const saved = localStorage.getItem('checklist')
     return saved

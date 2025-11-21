@@ -4,11 +4,9 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { 
   Sparkles, 
-  Users, 
   Shield, 
   Clock, 
   MapPin, 
-  MessageCircle, 
   Zap,
   ArrowRight,
   CheckCircle2,

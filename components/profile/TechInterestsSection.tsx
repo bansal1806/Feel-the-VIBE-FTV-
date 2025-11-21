@@ -108,7 +108,7 @@ export function TechInterestsSection({ form, onUpdate, isEditing }: TechInterest
         {form.techInterests && form.techInterests.length > 0 && (
           <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10">
             {form.techInterests
-              .filter(i => !TECH_INTERESTS.includes(i as any))
+              .filter(i => !TECH_INTERESTS.includes(i as string))
               .map(interest => (
                 <span
                   key={interest}

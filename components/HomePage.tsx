@@ -44,12 +44,12 @@ export default function HomePage({ items, isLoading, onSwipe }: HomePageProps) {
     creative: '✨',
   }
 
-  const moodColors = {
-    focus: 'neon-green',
-    chill: 'neon-blue',
-    social: 'neon-pink',
-    creative: 'neon-purple',
-  }
+  // const moodColors = {
+  //   focus: 'neon-green',
+  //   chill: 'neon-blue',
+  //   social: 'neon-pink',
+  //   creative: 'neon-purple',
+  // }
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row">

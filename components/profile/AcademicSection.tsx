@@ -8,7 +8,7 @@ import { useState } from 'react'
 
 interface AcademicSectionProps {
   form: ProfileFormData
-  onUpdate: (field: keyof ProfileFormData, value: any) => void
+  onUpdate: (field: keyof ProfileFormData, value: ProfileFormData[keyof ProfileFormData]) => void
   isEditing: boolean
 }
 
