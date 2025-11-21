@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Home, Flame, Radar, Shield } from 'lucide-react'
+import { Home, Flame, Radar, Shield, MessageCircle } from 'lucide-react'
 import ChatView from './ChatView'
 import TimecapsulesView from './TimecapsulesView'
 import HLRView from './HLRView'
