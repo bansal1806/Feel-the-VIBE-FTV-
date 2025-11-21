@@ -123,7 +123,7 @@ export default function AppShell({
                   <Sun className="h-4 w-4 dark:text-neon-yellow text-amber-600" />
                 )}
               </button>
-              <UserMenu user={user} />
+              {user && <UserMenu user={user} />}
               {rightSection}
             </div>
           </header>
