@@ -153,7 +153,7 @@ export default function UserMenu({ user }: UserMenuProps) {
               >
                 <div className="p-2">
                   <div className="px-3 py-2 border-b dark:border-white/10 border-gray-300/30">
-                    <p className="text-sm font-semibold text-theme dark:text-white text-gray-900">@{user.alias}</p>
+                    <p className="text-sm font-semibold text-theme dark:text-white text-gray-900">@{user.alias || user.email.split('@')[0]}</p>
                     <p className="text-xs text-theme-muted dark:text-white/60 text-gray-600 truncate">{user.email}</p>
                   </div>
 
