@@ -11,7 +11,7 @@ interface OnboardingProps {
 export default function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0)
   const [email, setEmail] = useState('')
-  const [, setAlias] = useState('')
+  // const [alias, setAlias] = useState('')
   const [username, setUsername] = useState('')
   const [avatar, setAvatar] = useState('')
   const [bio, setBio] = useState('')

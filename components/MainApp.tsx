@@ -25,51 +25,52 @@ type ChecklistState = {
   dismissed: boolean
 }
 
-function _Checklist() {
-  const [state, setState] = React.useState<ChecklistState>(() => {
-    const saved = localStorage.getItem('checklist')
-    return saved
-      ? JSON.parse(saved)
-      : { connect: false, rsvp: false, join: false, dismissed: false }
-  })
-  React.useEffect(() => {
-    localStorage.setItem('checklist', JSON.stringify(state))
-  }, [state])
-  React.useEffect(() => {
-    const off = bus.on('action', ({ type }) =>
-      setState((s) => ({ ...s, [type]: true })),
-    )
-    return off
-  }, [])
-  if (state.dismissed || (state.connect && state.rsvp && state.join)) return null
-  return (
-    <div className="glass-neon p-4 rounded-xl mb-4 border border-neon-cyan/30">
-      <div className="font-semibold mb-2 text-white">Get started</div>
-      <div className="flex items-center gap-3 flex-wrap">
-        {(['connect', 'rsvp', 'join'] as Array<keyof ChecklistState>).map(
-          (k) => (
-            <div
-              key={k}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-medium ${
-                state[k]
-                  ? 'border-neon-green bg-neon-green/10 text-neon-green'
-                  : 'border-white/20 bg-black-deep/30 text-white/60'
-              }`}
-            >
-              {k === 'connect' ? 'Connect' : k === 'rsvp' ? 'RSVP' : 'Join room'}
-            </div>
-          ),
-        )}
-        <button
-          onClick={() => setState((s) => ({ ...s, dismissed: true }))}
-          className="ml-auto text-xs text-white/60 hover:text-white transition"
-        >
-          Dismiss
-        </button>
-      </div>
-    </div>
-  )
-}
+// Checklist component - commented out for now
+// function Checklist() {
+//   const [state, setState] = React.useState<ChecklistState>(() => {
+//     const saved = localStorage.getItem('checklist')
+//     return saved
+//       ? JSON.parse(saved)
+//       : { connect: false, rsvp: false, join: false, dismissed: false }
+//   })
+//   React.useEffect(() => {
+//     localStorage.setItem('checklist', JSON.stringify(state))
+//   }, [state])
+//   React.useEffect(() => {
+//     const off = bus.on('action', ({ type }) =>
+//       setState((s) => ({ ...s, [type]: true })),
+//     )
+//     return off
+//   }, [])
+//   if (state.dismissed || (state.connect && state.rsvp && state.join)) return null
+//   return (
+//     <div className="glass-neon p-4 rounded-xl mb-4 border border-neon-cyan/30">
+//       <div className="font-semibold mb-2 text-white">Get started</div>
+//       <div className="flex items-center gap-3 flex-wrap">
+//         {(['connect', 'rsvp', 'join'] as Array<keyof ChecklistState>).map(
+//           (k) => (
+//             <div
+//               key={k}
+//               className={`px-3 py-1.5 rounded-lg border text-xs font-medium ${
+//                 state[k]
+//                   ? 'border-neon-green bg-neon-green/10 text-neon-green'
+//                   : 'border-white/20 bg-black-deep/30 text-white/60'
+//               }`}
+//             >
+//               {k === 'connect' ? 'Connect' : k === 'rsvp' ? 'RSVP' : 'Join room'}
+//             </div>
+//           ),
+//         )}
+//         <button
+//           onClick={() => setState((s) => ({ ...s, dismissed: true }))}
+//           className="ml-auto text-xs text-white/60 hover:text-white transition"
+//         >
+//           Dismiss
+//         </button>
+//       </div>
+//     </div>
+//   )
+// }
 
 type Tab = 'home' | 'hlr' | 'chat' | 'capsules' | 'dual'
 
