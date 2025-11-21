@@ -16,7 +16,7 @@ interface HomePageProps {
 
 export default function HomePage({ items, isLoading, onSwipe }: HomePageProps) {
   const feedItems = items ?? []
-  const [mood, setMood] = useState(globalState.get().mood || 'chill')
+  const [mood, setMood] = useState<'focus' | 'chill' | 'social' | 'creative'>(globalState.get().mood || 'chill')
   
   // Update global state when mood changes
   const handleMoodChange = (newMood: 'focus' | 'chill' | 'social' | 'creative') => {
