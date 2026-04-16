@@ -274,7 +274,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-2 gap-3 text-xs uppercase tracking-[0.18em] text-neon-cyan">
               <div className="rounded-xl border border-neon-cyan/30 bg-neon-cyan/10 p-3 text-center">
                 <div className="text-[10px] text-neon-cyan/80">SkillCreds</div>
-                <div className="text-xl font-semibold text-white">{profile.skillCreds ?? 0}</div>
+                <div className="text-xl font-semibold text-white">{profile?.skillCreds ?? 0}</div>
               </div>
               <div className="rounded-xl border border-neon-purple/30 bg-neon-purple/10 p-3 text-center">
                 <div className="text-[10px] text-neon-purple/80">Dual Mode</div>

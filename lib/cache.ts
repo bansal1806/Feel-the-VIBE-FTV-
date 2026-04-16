@@ -2,6 +2,26 @@ import { getRedisConnection } from './jobs/connection'
 
 const redis = getRedisConnection()
 
+// Simple in-memory fallback for local development when Redis is unavailable
+const memoryCache = new Map<string, { value: string; expires: number }>()
+
+function getMemoryValue(key: string) {
+    const item = memoryCache.get(key)
+    if (!item) return null
+    if (Date.now() > item.expires) {
+        memoryCache.delete(key)
+        return null
+    }
+    return JSON.parse(item.value)
+}
+
+function setMemoryValue(key: string, value: any, ttl: number) {
+    memoryCache.set(key, {
+        value: JSON.stringify(value),
+        expires: Date.now() + ttl * 1000
+    })
+}
+
 /**
  * Cache keys
  */
@@ -29,6 +49,13 @@ export const CACHE_TTL = {
 } as const
 
 /**
+ * Check if Redis is actually connected
+ */
+function isRedisConnected(): boolean {
+    return !!redis && redis.status === 'ready'
+}
+
+/**
  * Set cache value
  */
 export async function setCache(
@@ -36,56 +63,69 @@ export async function setCache(
     value: any,
     ttl: number = CACHE_TTL.medium
 ): Promise<void> {
-    if (!redis) return
-
-    try {
-        await redis.setex(key, ttl, JSON.stringify(value))
-    } catch (error) {
-        console.error('[cache] Set error:', error)
+    if (isRedisConnected()) {
+        try {
+            await redis!.setex(key, ttl, JSON.stringify(value))
+            return
+        } catch (error) {
+            console.error('[cache] Redis set error:', error)
+        }
     }
+    setMemoryValue(key, value, ttl)
 }
 
 /**
  * Get cache value
  */
 export async function getCache<T = any>(key: string): Promise<T | null> {
-    if (!redis) return null
-
-    try {
-        const value = await redis.get(key)
-        return value ? JSON.parse(value) : null
-    } catch (error) {
-        console.error('[cache] Get error:', error)
-        return null
+    if (isRedisConnected()) {
+        try {
+            const value = await redis!.get(key)
+            return value ? JSON.parse(value) : null
+        } catch (error) {
+            console.error('[cache] Redis get error:', error)
+        }
     }
+    return getMemoryValue(key)
 }
 
 /**
  * Delete cache value
  */
 export async function deleteCache(key: string): Promise<void> {
-    if (!redis) return
-
-    try {
-        await redis.del(key)
-    } catch (error) {
-        console.error('[cache] Delete error:', error)
+    if (isRedisConnected()) {
+        try {
+            await redis!.del(key)
+            return
+        } catch (error) {
+            console.error('[cache] Redis delete error:', error)
+        }
     }
+    memoryCache.delete(key)
 }
 
 /**
  * Delete multiple cache values by pattern
  */
 export async function deleteCachePattern(pattern: string): Promise<void> {
-    if (!redis) return
-
-    try {
-        const keys = await redis.keys(pattern)
-        if (keys.length > 0) {
-            await redis.del(...keys)
+    if (isRedisConnected()) {
+        try {
+            const keys = await redis!.keys(pattern)
+            if (keys.length > 0) {
+                await redis!.del(...keys)
+            }
+            return
+        } catch (error) {
+            console.error('[cache] Redis delete pattern error:', error)
         }
-    } catch (error) {
-        console.error('[cache] Delete pattern error:', error)
+    }
+    
+    // In-memory pattern deletion (basic startsWith/endsWith support)
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$')
+    for (const key of Array.from(memoryCache.keys())) {
+        if (regex.test(key)) {
+            memoryCache.delete(key)
+        }
     }
 }
 
@@ -93,88 +133,103 @@ export async function deleteCachePattern(pattern: string): Promise<void> {
  * Check if key exists
  */
 export async function cacheExists(key: string): Promise<boolean> {
-    if (!redis) return false
-
-    try {
-        const exists = await redis.exists(key)
-        return exists === 1
-    } catch (error) {
-        console.error('[cache] Exists error:', error)
-        return false
+    if (isRedisConnected()) {
+        try {
+            const exists = await redis!.exists(key)
+            return exists === 1
+        } catch (error) {
+            console.error('[cache] Redis exists error:', error)
+        }
     }
+    return memoryCache.has(key) && getMemoryValue(key) !== null
 }
 
 /**
  * Increment counter (for rate limiting, etc.)
  */
 export async function incrementCache(key: string, ttl?: number): Promise<number> {
-    if (!redis) return 0
-
-    try {
-        const value = await redis.incr(key)
-        if (ttl && value === 1) {
-            await redis.expire(key, ttl)
+    if (isRedisConnected()) {
+        try {
+            const value = await redis!.incr(key)
+            if (ttl && value === 1) {
+                await redis!.expire(key, ttl)
+            }
+            return value
+        } catch (error) {
+            console.error('[cache] Redis increment error:', error)
         }
-        return value
-    } catch (error) {
-        console.error('[cache] Increment error:', error)
-        return 0
     }
+
+    const current = getMemoryValue(key) || 0
+    const next = current + 1
+    setMemoryValue(key, next, ttl || CACHE_TTL.day)
+    return next
 }
 
 /**
  * Add item to set
  */
 export async function addToSet(key: string, value: string): Promise<void> {
-    if (!redis) return
-
-    try {
-        await redis.sadd(key, value)
-    } catch (error) {
-        console.error('[cache] Add to set error:', error)
+    if (isRedisConnected()) {
+        try {
+            await redis!.sadd(key, value)
+            return
+        } catch (error) {
+            console.error('[cache] Redis sadd error:', error)
+        }
     }
+    
+    const set = new Set(getMemoryValue(key) || [])
+    set.add(value)
+    setMemoryValue(key, Array.from(set), CACHE_TTL.day)
 }
 
 /**
  * Remove item from set
  */
 export async function removeFromSet(key: string, value: string): Promise<void> {
-    if (!redis) return
-
-    try {
-        await redis.srem(key, value)
-    } catch (error) {
-        console.error('[cache] Remove from set error:', error)
+    if (isRedisConnected()) {
+        try {
+            await redis!.srem(key, value)
+            return
+        } catch (error) {
+            console.error('[cache] Redis srem error:', error)
+        }
     }
+
+    const set = new Set(getMemoryValue(key) || [])
+    set.delete(value)
+    setMemoryValue(key, Array.from(set), CACHE_TTL.day)
 }
 
 /**
  * Get all items from set
  */
 export async function getSetMembers(key: string): Promise<string[]> {
-    if (!redis) return []
-
-    try {
-        return await redis.smembers(key)
-    } catch (error) {
-        console.error('[cache] Get set members error:', error)
-        return []
+    if (isRedisConnected()) {
+        try {
+            return await redis!.smembers(key)
+        } catch (error) {
+            console.error('[cache] Redis smembers error:', error)
+        }
     }
+    return getMemoryValue(key) || []
 }
 
 /**
  * Check if item is in set
  */
 export async function isInSet(key: string, value: string): Promise<boolean> {
-    if (!redis) return false
-
-    try {
-        const isMember = await redis.sismember(key, value)
-        return isMember === 1
-    } catch (error) {
-        console.error('[cache] Is in set error:', error)
-        return false
+    if (isRedisConnected()) {
+        try {
+            const isMember = await redis!.sismember(key, value)
+            return isMember === 1
+        } catch (error) {
+            console.error('[cache] Redis sismember error:', error)
+        }
     }
+    const set = new Set(getMemoryValue(key) || [])
+    return set.has(value)
 }
 
 /**
@@ -185,13 +240,24 @@ export async function addToSortedSet(
     value: string,
     score: number
 ): Promise<void> {
-    if (!redis) return
-
-    try {
-        await redis.zadd(key, score, value)
-    } catch (error) {
-        console.error('[cache] Add to sorted set error:', error)
+    if (isRedisConnected()) {
+        try {
+            await redis!.zadd(key, score, value)
+            return
+        } catch (error) {
+            console.error('[cache] Redis zadd error:', error)
+        }
     }
+
+    const set: Array<{ value: string; score: number }> = getMemoryValue(key) || []
+    const index = set.findIndex(i => i.value === value)
+    if (index > -1) {
+        set[index].score = score
+    } else {
+        set.push({ value, score })
+    }
+    set.sort((a, b) => a.score - b.score)
+    setMemoryValue(key, set, CACHE_TTL.day)
 }
 
 /**
@@ -202,14 +268,18 @@ export async function getSortedSetRange(
     min: number,
     max: number
 ): Promise<string[]> {
-    if (!redis) return []
-
-    try {
-        return await redis.zrangebyscore(key, min, max)
-    } catch (error) {
-        console.error('[cache] Get sorted set range error:', error)
-        return []
+    if (isRedisConnected()) {
+        try {
+            return await redis!.zrangebyscore(key, min, max)
+        } catch (error) {
+            console.error('[cache] Redis zrange error:', error)
+        }
     }
+
+    const set: Array<{ value: string; score: number }> = getMemoryValue(key) || []
+    return set
+        .filter(item => item.score >= min && item.score <= max)
+        .map(item => item.value)
 }
 
 /**
@@ -277,3 +347,4 @@ export async function invalidateRoomCache(roomId: string): Promise<void> {
         deleteCache(CACHE_KEYS.roomMembers(roomId)),
     ])
 }
+

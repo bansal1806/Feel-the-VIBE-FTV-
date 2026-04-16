@@ -13,9 +13,11 @@ import {
 } from '@/lib/hooks/useConversations'
 import { useProfile } from '@/lib/hooks/useProfile'
 import { formatDistanceToNow } from '@/lib/utils/time'
+import { useIsMounted } from '../lib/hooks/useIsMounted'
 import { bus } from '@/lib/bus'
 
 export default function ChatView() {
+  const isMounted = useIsMounted()
   const { data: profileData } = useProfile()
   const viewerId = profileData?.id
   const { data, isLoading } = useConversations()
@@ -146,6 +148,7 @@ function ConversationSummary({
   viewerId?: string
   conversation: ConversationPayload
 }) {
+  const isMounted = useIsMounted()
   const counterpart = conversation.participants.find((participant) => participant.id !== viewerId) ?? conversation.participants[0]
   const lastMessage = conversation.messages[conversation.messages.length - 1]
   return (
@@ -164,7 +167,7 @@ function ConversationSummary({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between text-sm">
           <span className="font-semibold text-white truncate">@{counterpart?.alias ?? 'anonymous'}</span>
-          {lastMessage && <span className="text-xs text-white/40 ml-2 flex-shrink-0">{formatDistanceToNow(lastMessage.createdAt)}</span>}
+          {lastMessage && isMounted && <span className="text-xs text-white/40 ml-2 flex-shrink-0">{formatDistanceToNow(lastMessage.createdAt)}</span>}
         </div>
         <div className="mt-1 text-xs text-white/60 line-clamp-1">
           {lastMessage ? lastMessage.content : 'Say hello and break the ice.'}
@@ -195,6 +198,7 @@ function ChatDetail({
   loading: boolean
   messagesEndRef: React.RefObject<HTMLDivElement>
 }) {
+  const isMounted = useIsMounted()
   const counterpart =
     conversation.participants.find((participant) => participant.id !== viewerId) ?? conversation.participants[0]
 
@@ -245,7 +249,7 @@ function ChatDetail({
               message={message.content}
               isMe={viewerId === message.sender.id}
               alias={message.sender.alias}
-              timestamp={formatDistanceToNow(message.createdAt)}
+              timestamp={isMounted ? formatDistanceToNow(message.createdAt) : '...'}
               read
             />
           ))}

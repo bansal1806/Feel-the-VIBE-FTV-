@@ -17,14 +17,18 @@ export function getRedisClient(): Redis | null {
       maxRetriesPerRequest: 3,
       enableReadyCheck: true,
       retryStrategy(times) {
+        const isLocal = redisUrl.includes('localhost') || redisUrl.includes('127.0.0.1')
+        if (process.env.NODE_ENV === 'development' && isLocal && times > 3) {
+          return null // Stop retrying localhost in dev
+        }
         // Exponential backoff with max delay of 3 seconds
         const delay = Math.min(times * 50, 3000)
-        log.info(`Redis retry attempt ${times}, waiting ${delay}ms`)
+        if (process.env.NODE_ENV !== 'development') {
+          log.info(`Redis retry attempt ${times}, waiting ${delay}ms`)
+        }
         return delay
       },
       reconnectOnError(err) {
-        log.warn('Redis reconnect on error', { error: err.message })
-        // Reconnect on READONLY errors
         const targetError = 'READONLY'
         if (err.message.includes(targetError)) {
           return true
@@ -33,7 +37,15 @@ export function getRedisClient(): Redis | null {
       },
     })
 
-    redis.on('error', (err) => {
+    redis.on('error', (err: any) => {
+      const isLocal = redisUrl.includes('localhost') || redisUrl.includes('127.0.0.1')
+      const isRefused = err.code === 'ECONNREFUSED' || 
+                       err.message?.includes('ECONNREFUSED') ||
+                       err.errors?.some((e: any) => e.code === 'ECONNREFUSED')
+
+      if (process.env.NODE_ENV === 'development' && isLocal && isRefused) {
+        return // Silent in dev for localhost
+      }
       log.error('Redis Client Error', err)
     })
 

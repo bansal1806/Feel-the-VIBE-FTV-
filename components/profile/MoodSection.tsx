@@ -33,7 +33,7 @@ export function MoodSection({ form, onUpdate, isEditing }: MoodSectionProps) {
     )
   }
 
-  const isCustomMood = form.moodIndicator && !MOOD_OPTIONS.includes(form.moodIndicator as string)
+  const isCustomMood = form.moodIndicator && !(MOOD_OPTIONS as readonly string[]).includes(form.moodIndicator)
 
   return (
     <ProfileSection icon={Lightbulb} title="Mood & Vibe Indicators (Optional)" color="neon-purple">
@@ -42,7 +42,7 @@ export function MoodSection({ form, onUpdate, isEditing }: MoodSectionProps) {
           Light stuff like simple vibe cues—not memes.
         </p>
         <select
-          value={isCustomMood ? '' : form.moodIndicator}
+          value={isCustomMood ? '' : (form.moodIndicator ?? '')}
           onChange={(e) => onUpdate('moodIndicator', e.target.value)}
           className="w-full rounded-xl border border-neon-purple/30 bg-black-deep/80 px-4 py-2 text-sm text-white outline-none focus:border-neon-purple focus:ring-2 focus:ring-neon-purple/20"
         >

@@ -20,8 +20,10 @@ interface Conversation {
 export default function ChatPage() {
     const [conversations, setConversations] = useState<Conversation[]>([])
     const [searchQuery, setSearchQuery] = useState('')
+    const [isMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
+        setIsMounted(true)
         loadConversations()
     }, [])
 
@@ -114,7 +116,7 @@ export default function ChatPage() {
                                     <h3 className="font-semibold text-white">
                                         {conv.type === 'DIRECT' ? conv.participantAlias : conv.roomName}
                                     </h3>
-                                    {conv.lastMessageAt && (
+                                    {conv.lastMessageAt && isMounted && (
                                         <span className="text-xs text-white/40">
                                             {formatDistance(conv.lastMessageAt, new Date(), { addSuffix: true })}
                                         </span>

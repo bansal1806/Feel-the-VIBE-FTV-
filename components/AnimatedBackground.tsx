@@ -1,10 +1,15 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function AnimatedBackground() {
+  const [isMounted, setIsMounted] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -221,8 +226,8 @@ export default function AnimatedBackground() {
         />
       </div>
 
-      {/* Floating orbs */}
-      {[...Array(6)].map((_, i) => (
+      {/* Floating orbs - only render on client to avoid hydration mismatch */}
+      {isMounted && [...Array(6)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full blur-2xl"

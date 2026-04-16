@@ -170,7 +170,7 @@ export default function UserMenu({ user }: UserMenuProps) {
 
                   <button
                     onClick={() => {
-                      router.push('/app/settings')
+                      router.push('/app/profile/settings')
                       setIsOpen(false)
                     }}
                     className="w-full flex items-center gap-3 px-3 py-2 text-sm text-theme dark:text-white/80 text-gray-800 dark:hover:bg-white/5 hover:bg-gray-200/50 rounded-lg transition"

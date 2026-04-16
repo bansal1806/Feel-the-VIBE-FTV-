@@ -24,6 +24,11 @@ export default function LocationPermissionDialog({
     const [permissionStatus, setPermissionStatus] = useState<LocationPermissionStatus>('prompt')
     const [isRequesting, setIsRequesting] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [isMounted, setIsMounted] = useState(false)
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     useEffect(() => {
         if (isOpen) {
@@ -68,7 +73,7 @@ export default function LocationPermissionDialog({
         }
     }
 
-    if (!isGeolocationSupported()) {
+    if (!isMounted || !isGeolocationSupported()) {
         return null
     }
 

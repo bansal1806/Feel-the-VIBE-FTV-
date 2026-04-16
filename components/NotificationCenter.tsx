@@ -22,8 +22,10 @@ export default function NotificationCenter() {
     const [notifications, setNotifications] = useState<Notification[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
     const [isLoading, setIsLoading] = useState(false)
+    const [isMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
+        setIsMounted(true)
         fetchNotificationCounts()
         // Poll for new notifications every 30 seconds
         const interval = setInterval(fetchNotificationCounts, 30000)
@@ -113,7 +115,7 @@ export default function NotificationCenter() {
                 className="relative rounded-full p-2 text-white transition hover:bg-white/10"
             >
                 <Bell size={24} />
-                {unreadCount > 0 && (
+                {isMounted && unreadCount > 0 && (
                     <span className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-xs font-bold text-white">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
@@ -195,7 +197,7 @@ export default function NotificationCenter() {
                                                     <div className="flex-1">
                                                         <p className="text-sm text-white">{notification.payload.message}</p>
                                                         <p className="mt-1 text-xs text-white/50">
-                                                            {formatDistance(new Date(notification.createdAt), new Date(), {
+                                                            {isMounted && formatDistance(new Date(notification.createdAt), new Date(), {
                                                                 addSuffix: true,
                                                             })}
                                                         </p>

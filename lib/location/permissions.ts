@@ -20,7 +20,7 @@ export interface LocationError {
  * Check if geolocation is supported
  */
 export function isGeolocationSupported(): boolean {
-    return 'geolocation' in navigator
+    return typeof window !== 'undefined' && 'geolocation' in navigator
 }
 
 /**

@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { motion } from 'framer-motion'
-import { Shield, Sparkles, BookmarkPlus } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Shield, Sparkles, BookmarkPlus, User, MapPin, Hash, GraduationCap, Calendar, Zap, Lock, Eye, Target, Share2, Save } from 'lucide-react'
 import IntentPicker from './IntentPicker'
 import SeekingEditor from './SeekingEditor'
+import AnimatedBackground from './AnimatedBackground'
 import { useProfile } from '@/lib/hooks/useProfile'
 import { globalState, type Intent } from '@/lib/state'
 import { bus } from '@/lib/bus'
@@ -28,6 +29,21 @@ type FormState = {
 }
 
 const INTENT_OPTIONS: Intent[] = ['collab', 'study', 'social', 'dating', 'mentor']
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+}
 
 export default function ProfileView() {
   const { data: profile, isLoading } = useProfile()
@@ -125,134 +141,269 @@ export default function ProfileView() {
   const loading = isLoading || !form
 
   return (
-    <div className="space-y-6">
-      <motion.section initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-white/90 p-6 shadow-lg shadow-indigo-100 ring-1 ring-indigo-50 backdrop-blur dark:bg-slate-900/70 dark:ring-slate-800/70">
-        {loading ? (
-          <HeaderSkeleton />
-        ) : (
-          <HeaderContent profile={profile!} />
-        )}
-      </motion.section>
+    <div className="relative min-h-screen pb-24 overflow-hidden">
+      {/* Immersive Background */}
+      <AnimatedBackground />
 
-      <main className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <div className="space-y-6">
-          <ProfileFormSection title="Identity" description="Tune how you present yourself across the network.">
-            {loading ? (
-              <FormSkeleton rows={3} />
-            ) : (
-              <div className="space-y-3">
-                <TextField label="Studio alias" value={form!.alias} onChange={(value) => handleInput('alias', value)} />
-                <TextField label="Headline" value={form!.headline} onChange={(value) => handleInput('headline', value)} placeholder="ex. Building campus collab tools" />
-                <div className="grid gap-3 md:grid-cols-2">
-                  <TextField label="Pronouns" value={form!.pronouns} onChange={(value) => handleInput('pronouns', value)} />
-                  <TextField label="Hometown" value={form!.hometown} onChange={(value) => handleInput('hometown', value)} />
+      <div className="relative z-10 max-w-6xl mx-auto px-4 md:px-8 pt-8">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
+        >
+          {/* Header Section */}
+          <motion.section variants={itemVariants} className="frosted-panel overflow-hidden">
+             {loading ? <HeaderSkeleton /> : <HeaderContent profile={profile!} />}
+          </motion.section>
+
+          <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+            {/* Main Content */}
+            <div className="space-y-8">
+              <ProfileFormSection 
+                title="Identity" 
+                subtitle="HOW YOU VIBE"
+                icon={<User className="h-4 w-4" />}
+                description="Fine-tune your campus presence and alias settings."
+              >
+                {loading ? (
+                  <FormSkeleton rows={3} />
+                ) : (
+                  <div className="space-y-4">
+                    <TextField 
+                      label="Studio Alias" 
+                      value={form!.alias} 
+                      onChange={(value) => handleInput('alias', value)} 
+                      icon={<Hash className="h-4 w-4" />}
+                    />
+                    <TextField 
+                      label="Campus Headline" 
+                      value={form!.headline} 
+                      onChange={(value) => handleInput('headline', value)} 
+                      placeholder="e.g. Building campus collab tools" 
+                      icon={<Sparkles className="h-4 w-4" />}
+                    />
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <TextField 
+                        label="Pronouns" 
+                        value={form!.pronouns} 
+                        onChange={(value) => handleInput('pronouns', value)} 
+                        icon={<Zap className="h-4 w-4" />}
+                      />
+                      <TextField 
+                        label="Hometown" 
+                        value={form!.hometown} 
+                        onChange={(value) => handleInput('hometown', value)} 
+                        icon={<MapPin className="h-4 w-4" />}
+                      />
+                    </div>
+                  </div>
+                )}
+              </ProfileFormSection>
+
+              <ProfileFormSection 
+                title="Campus Story" 
+                subtitle="ACADEMIC LORE"
+                icon={<GraduationCap className="h-4 w-4" />}
+                description="Your academic journey and interests power smarter matches."
+              >
+                {loading ? (
+                  <FormSkeleton rows={4} />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <TextField 
+                        label="Major" 
+                        value={form!.major} 
+                        onChange={(value) => handleInput('major', value)} 
+                        icon={<GraduationCap className="h-4 w-4" />}
+                      />
+                      <TextField 
+                        label="Year" 
+                        value={form!.year} 
+                        onChange={(value) => handleInput('year', value)} 
+                        icon={<Calendar className="h-4 w-4" />}
+                      />
+                    </div>
+                    <TextArea 
+                      label="Bio" 
+                      value={form!.bio} 
+                      onChange={(value) => handleInput('bio', value)} 
+                      placeholder="Tell your campus who you are and what you're looking for..." 
+                    />
+                    <TextField 
+                      label="Interests" 
+                      hint="Separate multiple interests with commas" 
+                      value={form!.interests} 
+                      onChange={(value) => handleInput('interests', value)} 
+                      icon={<Share2 className="h-4 w-4" />}
+                    />
+                  </div>
+                )}
+              </ProfileFormSection>
+
+              <ProfileFormSection 
+                title="Goals & Seeking" 
+                subtitle="OPPORTUNITY RADAR"
+                icon={<Target className="h-4 w-4" />}
+                description="Let people know what you're bringing to campus."
+              >
+                <div className="space-y-6">
+                  <IntentPicker />
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2 block">SKILLS YOU'RE SEEKING</label>
+                    <SeekingEditor />
+                  </div>
                 </div>
-              </div>
-            )}
-          </ProfileFormSection>
+              </ProfileFormSection>
 
-          <ProfileFormSection title="Campus Story" description="Academic details power smarter matches.">
-            {loading ? (
-              <FormSkeleton rows={4} />
-            ) : (
-              <div className="space-y-3">
-                <div className="grid gap-3 md:grid-cols-2">
-                  <TextField label="Major" value={form!.major} onChange={(value) => handleInput('major', value)} />
-                  <TextField label="Year" value={form!.year} onChange={(value) => handleInput('year', value)} />
-                </div>
-                <TextArea label="Bio" value={form!.bio} onChange={(value) => handleInput('bio', value)} placeholder="Let your campus know what you're building, exploring, or seeking." />
-                <TextField label="Interests" hint="Comma separated" value={form!.interests} onChange={(value) => handleInput('interests', value)} />
-              </div>
-            )}
-          </ProfileFormSection>
+              <ProfileFormSection 
+                title="Privacy & Safety" 
+                subtitle="DUAL IDENTITY"
+                icon={<Lock className="h-4 w-4" />}
+                description="Control your visibility and identity progression tiers."
+              >
+                {loading ? (
+                  <FormSkeleton rows={3} />
+                ) : (
+                  <div className="space-y-4">
+                    <ToggleRow 
+                      label="Dual Identity Mode" 
+                      description="Keep your professional profile locked until trust is built." 
+                      value={form!.dualIdentityMode} 
+                      onChange={(value) => handleInput('dualIdentityMode', value)} 
+                      icon={<Lock className="h-4 w-4 text-neon-purple" />}
+                    />
+                    <ToggleRow 
+                      label="Public Discovery" 
+                      description="Allow other verified students to discover your alias." 
+                      value={form!.discoverable} 
+                      onChange={(value) => handleInput('discoverable', value)} 
+                      icon={<Eye className="h-4 w-4 text-neon-cyan" />}
+                    />
+                    <div className="grid gap-4 md:grid-cols-2">
+                       <SelectField
+                        label="Profile Visibility"
+                        value={form!.profileVisibility}
+                        onChange={(value) => handleInput('profileVisibility', value as FormState['profileVisibility'])}
+                        options={[
+                          { value: 'everyone', label: 'Global' },
+                          { value: 'campus', label: 'My Campus' },
+                          { value: 'connections', label: 'Matches Only' },
+                        ]}
+                      />
+                      <SelectField
+                        label="Message Permissions"
+                        value={form!.allowMessagesFrom}
+                        onChange={(value) => handleInput('allowMessagesFrom', value as FormState['allowMessagesFrom'])}
+                        options={[
+                          { value: 'everyone', label: 'Open DMs' },
+                          { value: 'campus', label: 'Verified Only' },
+                          { value: 'connections', label: 'Mutuals Only' },
+                        ]}
+                      />
+                    </div>
+                    
+                    <div className="pt-2 border-t border-white/5 space-y-4">
+                      <ToggleRow 
+                        label="Recruiter Outreach" 
+                        description="Receive opportunities from verified campus partners." 
+                        value={form!.recruiterOptIn} 
+                        onChange={(value) => handleInput('recruiterOptIn', value)} 
+                      />
+                      <ToggleRow 
+                        label="Anonymous Analytics" 
+                        description="Help us improve matches with anonymized usage data." 
+                        value={form!.shareAnalytics} 
+                        onChange={(value) => handleInput('shareAnalytics', value)} 
+                      />
+                    </div>
+                  </div>
+                )}
+              </ProfileFormSection>
 
-          <ProfileFormSection title="Intent & Seeking" description="Tell the algorithm what energies to bring your way.">
-            <div className="space-y-4">
-              <IntentPicker />
-              <div>
-                <div className="text-xs text-slate-600 dark:text-slate-300 mb-1">Seeking skills</div>
-                <SeekingEditor />
-              </div>
+              <motion.div variants={itemVariants} className="flex justify-end pt-4">
+                <button
+                  onClick={handleSubmit}
+                  disabled={updateProfileMutation.isPending || !form}
+                  className="group relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-neon-cyan to-neon-purple transition-transform group-hover:scale-x-110" />
+                  <Save className="h-4 w-4" />
+                  {updateProfileMutation.isPending ? 'Propagating...' : 'Update Vibe Profile'}
+                </button>
+              </motion.div>
             </div>
-          </ProfileFormSection>
 
-          <ProfileFormSection title="Privacy Controls" description="Fine-tune how your dual identity unlocks.">
-            {loading ? (
-              <FormSkeleton rows={3} />
-            ) : (
-              <div className="space-y-3">
-                <ToggleRow label="Dual identity mode" description="Keep your professional profile locked until trust is built." value={form!.dualIdentityMode} onChange={(value) => handleInput('dualIdentityMode', value)} />
-                <ToggleRow label="Discoverable in swipe deck" description="Allow other verified students to discover your alias." value={form!.discoverable} onChange={(value) => handleInput('discoverable', value)} />
-                <ToggleRow label="Open to recruiter intros" description="Receive curated opportunities from verified partners." value={form!.recruiterOptIn} onChange={(value) => handleInput('recruiterOptIn', value)} />
-                <ToggleRow label="Share anonymous analytics" description="Help Vibe improve matches by sharing anonymized usage." value={form!.shareAnalytics} onChange={(value) => handleInput('shareAnalytics', value)} />
-                <SelectField
-                  label="Profile visibility"
-                  value={form!.profileVisibility}
-                  onChange={(value) => handleInput('profileVisibility', value as FormState['profileVisibility'])}
-                  options={[
-                    { value: 'everyone', label: 'Entire network' },
-                    { value: 'campus', label: 'My campus' },
-                    { value: 'connections', label: 'Connections only' },
-                  ]}
-                />
-                <SelectField
-                  label="Allow messages from"
-                  value={form!.allowMessagesFrom}
-                  onChange={(value) => handleInput('allowMessagesFrom', value as FormState['allowMessagesFrom'])}
-                  options={[
-                    { value: 'everyone', label: 'Everyone' },
-                    { value: 'campus', label: 'Verified campus members' },
-                    { value: 'connections', label: 'Connections only' },
-                  ]}
-                />
-              </div>
-            )}
-          </ProfileFormSection>
-
-          <div className="flex justify-end">
-            <button
-              onClick={handleSubmit}
-              disabled={updateProfileMutation.isPending || !form}
-              className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-violet-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {updateProfileMutation.isPending ? 'Saving…' : 'Save profile'}
-            </button>
+            {/* Sidebar */}
+            <aside className="space-y-8">
+              <motion.div variants={itemVariants} className="animate-float">
+                <StatsPanel stats={stats} loading={loading} />
+              </motion.div>
+              <motion.div variants={itemVariants} style={{ animationDelay: '1s' }} className="animate-float">
+                <TrustPanel />
+              </motion.div>
+            </aside>
           </div>
-        </div>
-
-        <aside className="space-y-6">
-          <StatsPanel stats={stats} loading={loading} />
-          <TrustPanel />
-        </aside>
-      </main>
+        </motion.div>
+      </div>
     </div>
   )
 }
 
 function HeaderContent({ profile }: { profile: NonNullable<ReturnType<typeof useProfile>['data']> }) {
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-      <div className="flex items-center gap-4">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-2xl font-semibold text-white shadow-lg shadow-indigo-500/30">
-          {profile.alias.slice(0, 2).toUpperCase()}
+    <div className="relative p-8 md:p-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+      {/* Decorative background glow */}
+      <div className="absolute top-0 right-0 h-32 w-32 bg-neon-cyan/10 blur-3xl rounded-full" />
+      <div className="absolute bottom-0 left-0 h-32 w-32 bg-neon-purple/10 blur-3xl rounded-full" />
+
+      <div className="flex items-center gap-6 relative z-10">
+        <div className="group relative">
+           <div className="absolute -inset-1 rounded-3xl bg-gradient-to-br from-neon-cyan via-neon-purple to-neon-pink opacity-50 blur transition duration-1000 group-hover:opacity-100 group-hover:duration-200" />
+           <div className="relative flex h-24 w-24 items-center justify-center rounded-2xl bg-black-deep text-3xl font-black text-white shadow-2xl">
+              <span className="gradient-text-pink">{profile.alias.slice(0, 2).toUpperCase()}</span>
+           </div>
+           <div className="absolute -bottom-1 -right-1 rounded-full bg-neon-green p-1.5 shadow-lg shadow-neon-green/30">
+             <Zap className="h-3 w-3 text-black fill-black" />
+           </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">@{profile.alias}</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-300">{profile.headline || 'Campus collaborator in stealth mode'}</p>
-          <div className="mt-2 inline-flex items-center gap-2 rounded-2xl border border-indigo-200 bg-indigo-50/80 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600 dark:border-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300">
-            <Shield className="h-3 w-3" />
-            Verified campus identity
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-black tracking-tighter text-white">@{profile.alias}</h1>
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-neon-cyan p-1 shadow-lg shadow-neon-cyan/20">
+              <Shield className="h-2.5 w-2.5 text-black" />
+            </div>
+          </div>
+          <p className="text-sm font-medium text-white/50">{profile.headline || 'Campus collaborator in stealth mode'}</p>
+          <div className="flex items-center gap-2 mt-3">
+             <span className="rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-neon-cyan">
+               Verified Persona
+             </span>
+             {profile.dualIdentityMode && (
+               <span className="rounded-full bg-neon-purple/10 border border-neon-purple/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-neon-purple">
+                 Stealth Active
+               </span>
+             )}
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3 text-xs uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-300 md:text-right">
+
+      <div className="grid grid-cols-2 gap-8 md:text-right relative z-10">
         <div>
-          <div className="text-[10px]">SkillCreds</div>
-          <div className="text-xl font-semibold text-slate-900 dark:text-white">{profile.skillCreds ?? 0}</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-1">SKILLCREDS</div>
+          <div className="text-3xl font-black text-white neon-glow-cyan shadow-none drop-shadow-none">
+            {profile.skillCreds ?? 0}
+          </div>
         </div>
         <div>
-          <div className="text-[10px]">Dual identity</div>
-          <div className="text-xl font-semibold text-slate-900 dark:text-white">{profile.dualIdentityMode ? 'Active' : 'Disabled'}</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-1">IDENTITY</div>
+          <div className="text-3xl font-black text-white">
+            <span className={profile.dualIdentityMode ? 'gradient-text-pink' : 'text-white/20'}>
+              {profile.dualIdentityMode ? 'DUAL' : 'CORE'}
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -260,18 +411,43 @@ function HeaderContent({ profile }: { profile: NonNullable<ReturnType<typeof use
 }
 
 function HeaderSkeleton() {
-  return <div className="h-24 animate-pulse rounded-2xl bg-indigo-50/70 dark:bg-slate-900/50" />
+  return <div className="h-44 animate-pulse rounded-3xl bg-white/5" />
 }
 
-function ProfileFormSection({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+function ProfileFormSection({ 
+  title, 
+  subtitle,
+  icon,
+  description, 
+  children 
+}: { 
+  title: string; 
+  subtitle: string;
+  icon: React.ReactNode;
+  description: string; 
+  children: React.ReactNode 
+}) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
-      <header className="mb-4">
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{title}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-300">{description}</p>
+    <motion.section 
+      variants={itemVariants}
+      className="frosted-panel p-6 md:p-8 space-y-6"
+    >
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-white/60">
+              {icon}
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">{subtitle}</span>
+          </div>
+          <h3 className="text-2xl font-black tracking-tight text-white">{title}</h3>
+          <p className="text-sm font-medium text-white/40">{description}</p>
+        </div>
       </header>
-      {children}
-    </section>
+      <div className="relative">
+        {children}
+      </div>
+    </motion.section>
   )
 }
 
@@ -281,24 +457,33 @@ function TextField({
   onChange,
   placeholder,
   hint,
+  icon,
 }: {
   label: string
   value: string
   onChange: (value: string) => void
   placeholder?: string
   hint?: string
+  icon?: React.ReactNode
 }) {
   return (
-    <label className="block text-sm">
-      <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</span>
-      <input
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={placeholder}
-        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-      />
-      {hint && <span className="mt-1 block text-[11px] text-slate-400">{hint}</span>}
-    </label>
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">{label}</span>
+      </div>
+      <div className="relative group">
+        <div className="absolute inset-y-0 left-4 flex items-center text-white/20 group-focus-within:text-neon-cyan transition-colors">
+          {icon}
+        </div>
+        <input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
+          className="w-full rounded-2xl border border-white/5 bg-white/5 py-4 pl-12 pr-4 text-sm font-medium text-white placeholder:text-white/20 outline-none ring-neon-cyan/20 transition-all focus:border-neon-cyan/50 focus:bg-white/10 focus:ring-4"
+        />
+      </div>
+      {hint && <span className="block text-[10px] font-medium text-white/20 ml-2">{hint}</span>}
+    </div>
   )
 }
 
@@ -314,16 +499,16 @@ function TextArea({
   placeholder?: string
 }) {
   return (
-    <label className="block text-sm">
-      <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</span>
+    <div className="space-y-1.5">
+      <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">{label}</span>
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         rows={4}
-        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        className="w-full rounded-3xl border border-white/5 bg-white/5 p-5 text-sm font-medium text-white placeholder:text-white/20 outline-none ring-neon-purple/20 transition-all focus:border-neon-purple/50 focus:bg-white/10 focus:ring-4"
       />
-    </label>
+    </div>
   )
 }
 
@@ -332,24 +517,38 @@ function ToggleRow({
   description,
   value,
   onChange,
+  icon,
 }: {
   label: string
   description: string
   value: boolean
   onChange: (value: boolean) => void
+  icon?: React.ReactNode
 }) {
   return (
     <button
       type="button"
       onClick={() => onChange(!value)}
-      className="flex w-full items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-left text-sm transition hover:border-indigo-200 hover:bg-indigo-50/60 dark:border-slate-700 dark:bg-slate-900/60"
+      className="group flex w-full items-center justify-between gap-6 rounded-2xl border border-white/5 bg-white/5 p-5 text-left transition-all hover:bg-white/10"
     >
-      <div>
-        <div className="font-medium text-slate-800 dark:text-slate-100">{label}</div>
-        <div className="text-xs text-slate-500 dark:text-slate-300">{description}</div>
+      <div className="flex items-center gap-4">
+        {icon && (
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 border border-white/10">
+            {icon}
+          </div>
+        )}
+        <div>
+          <div className="text-sm font-bold text-white transition-colors group-hover:text-neon-cyan">{label}</div>
+          <div className="text-xs font-medium text-white/40">{description}</div>
+        </div>
       </div>
-      <div className={`flex h-6 w-12 items-center rounded-full ${value ? 'bg-gradient-to-r from-indigo-500 to-violet-500' : 'bg-slate-300 dark:bg-slate-700'}`}>
-        <div className={`h-5 w-5 rounded-full bg-white shadow transition ${value ? 'translate-x-6' : 'translate-x-1'}`} />
+      <div className={`relative flex h-7 w-14 shrink-0 items-center rounded-full transition-colors duration-300 ${value ? 'bg-white' : 'bg-white/10 border border-white/10'}`}>
+        <motion.div 
+          layout
+          className={`h-5 w-5 rounded-full shadow-lg ${value ? 'bg-black ml-1' : 'bg-white/40 ml-1'}`}
+          animate={{ x: value ? 28 : 0 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        />
       </div>
     </button>
   )
@@ -367,20 +566,20 @@ function SelectField({
   options: Array<{ value: string; label: string }>
 }) {
   return (
-    <label className="block text-sm">
-      <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{label}</span>
+    <div className="space-y-1.5">
+      <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">{label}</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        className="w-full appearance-none rounded-2xl border border-white/5 bg-white/5 px-4 py-4 text-sm font-bold text-white outline-none ring-white/5 transition-all focus:border-white/20 focus:bg-white/10 focus:ring-4"
       >
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} className="bg-black text-white">
             {option.label}
           </option>
         ))}
       </select>
-    </label>
+    </div>
   )
 }
 
@@ -393,23 +592,26 @@ function StatsPanel({
 }) {
   const items = useMemo(
     () => [
-      { label: 'Active rooms', value: stats?.activeRooms ?? 0 },
-      { label: 'Rooms hosted', value: stats?.createdRooms ?? 0 },
-      { label: 'Events RSVP', value: stats?.eventsGoing ?? 0 },
-      { label: 'Timecapsules', value: stats?.timecapsules ?? 0 },
+      { label: 'Active rooms', value: stats?.activeRooms ?? 0, color: 'text-neon-cyan' },
+      { label: 'Rooms hosted', value: stats?.createdRooms ?? 0, color: 'text-neon-purple' },
+      { label: 'Events RSVP', value: stats?.eventsGoing ?? 0, color: 'text-neon-green' },
+      { label: 'Timecapsules', value: stats?.timecapsules ?? 0, color: 'text-neon-pink' },
     ],
     [stats],
   )
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
-      <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Activity snapshot</h3>
-      <div className="mt-4 grid gap-3">
+    <section className="frosted-panel p-6 space-y-6">
+      <div className="flex items-center gap-2">
+        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 italic">LIFETIME</span>
+        <h3 className="text-sm font-bold text-white">Vibe Ledger</h3>
+      </div>
+      <div className="grid gap-3">
         {loading
-          ? [0, 1, 2, 3].map((index) => <div key={index} className="h-12 animate-pulse rounded-xl bg-indigo-50/60 dark:bg-slate-900/60" />)
+          ? [0, 1, 2, 3].map((index) => <div key={index} className="h-16 animate-pulse rounded-2xl bg-white/5" />)
           : items.map((item) => (
-              <div key={item.label} className="flex items-center justify-between rounded-xl border border-indigo-100 bg-indigo-50/50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:border-indigo-900/40 dark:bg-indigo-900/40 dark:text-indigo-200">
-                <span>{item.label}</span>
-                <span className="text-lg text-slate-900 dark:text-white">{item.value}</span>
+              <div key={item.label} className="group flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 px-5 py-4 transition-all hover:bg-white hover:border-white">
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 group-hover:text-black">{item.label}</span>
+                <span className={`text-2xl font-black ${item.color} group-hover:text-black`}>{item.value}</span>
               </div>
             ))}
       </div>
@@ -419,25 +621,42 @@ function StatsPanel({
 
 function TrustPanel() {
   return (
-    <section className="space-y-4 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-500/20 to-violet-500/20 p-5 text-sm text-indigo-800 shadow-inner dark:border-indigo-900/60 dark:from-indigo-900/40 dark:to-violet-900/40 dark:text-indigo-200">
-      <div className="flex items-center gap-3">
-        <div className="rounded-xl bg-white/60 p-2 text-indigo-600 shadow">
-          <Sparkles className="h-5 w-5" />
+    <section className="relative overflow-hidden group rounded-[2rem] border border-white/5 bg-gradient-to-br from-neon-purple/20 via-black-deep to-neon-cyan/20 p-8 space-y-6 shadow-2xl">
+      {/* Decorative pulse glow */}
+      <div className="absolute -top-10 -right-10 h-32 w-32 bg-neon-purple/10 blur-3xl group-hover:bg-neon-purple/20 transition-colors" />
+      
+      <div className="space-y-4 relative z-10">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 border border-white/20 text-neon-purple shadow-lg">
+          <Sparkles className="h-6 w-6" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-700 dark:text-indigo-200">Trust progression</h3>
-          <p className="text-xs text-indigo-600/80 dark:text-indigo-200/80">Each meaningful chat unlocks more of your professional story.</p>
+          <h3 className="text-xl font-black tracking-tight text-white mb-2">Nexus Trust</h3>
+          <p className="text-sm font-medium text-white/40 leading-relaxed">Your professional story unlocks gradually through meaningful connections.</p>
         </div>
       </div>
-      <div className="space-y-2 text-xs text-indigo-700/80 dark:text-indigo-200/70">
-        <p>• Stage 1: Alias chat & vibes</p>
-        <p>• Stage 2: Portfolio snapshots unlock</p>
-        <p>• Stage 3: Academic details reveal</p>
-        <p>• Stage 4: Full professional unlock + mutual intros</p>
+
+      <div className="space-y-4 pt-4 relative z-10">
+        {[
+          { icon: <Zap className="h-3 w-3" />, stage: '1', title: 'Stealth Discovery', desc: 'Alias chat & vibes' },
+          { icon: <Hash className="h-3 w-3" />, stage: '2', title: 'Core Reveal', desc: 'Major & interest snapshots' },
+          { icon: <GraduationCap className="h-3 w-3" />, stage: '3', title: 'Deep Context', desc: 'Academic details revealed' },
+          { icon: <Lock className="h-3 w-3" />, stage: '4', title: 'Full Access', desc: 'Mutual professional unlock' },
+        ].map((item) => (
+          <div key={item.stage} className="flex gap-4">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/40">
+              {item.stage}
+            </div>
+            <div>
+              <div className="text-xs font-bold text-white/80">{item.title}</div>
+              <div className="text-[10px] font-medium text-white/30">{item.desc}</div>
+            </div>
+          </div>
+        ))}
       </div>
-      <button className="inline-flex items-center gap-2 rounded-xl border border-indigo-200 bg-white/70 px-3 py-2 text-xs font-semibold text-indigo-600 shadow-sm transition hover:bg-white dark:border-indigo-800 dark:bg-slate-900/50 dark:text-indigo-200">
+
+      <button className="relative z-10 w-full flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 py-3 text-xs font-bold text-white transition-all hover:bg-white hover:text-black">
         <BookmarkPlus className="h-4 w-4" />
-        View trust playbook
+        The Trust Playbook
       </button>
     </section>
   )
@@ -445,11 +664,12 @@ function TrustPanel() {
 
 function FormSkeleton({ rows }: { rows: number }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {Array.from({ length: rows }).map((_, index) => (
-        <div key={index} className="h-12 animate-pulse rounded-xl bg-indigo-50/60 dark:bg-slate-900/60" />
+        <div key={index} className="h-16 animate-pulse rounded-2xl bg-white/5" />
       ))}
     </div>
   )
 }
+
 

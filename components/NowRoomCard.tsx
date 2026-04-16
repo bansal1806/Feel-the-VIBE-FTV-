@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Users, Clock, MessageCircle, BookOpen, Calendar, Users as UsersIcon, KeyRound } from 'lucide-react'
 import type { RoomPayload } from '@/lib/hooks/useRooms'
 import { formatDistanceFromNow } from '@/lib/utils/time'
+import { useIsMounted } from '../lib/hooks/useIsMounted'
 
 interface NowRoomCardProps {
   room: RoomPayload
@@ -24,6 +25,7 @@ const ICONS: Record<RoomPayload['type'], typeof BookOpen> = {
 }
 
 export default function NowRoomCard({ room, isJoining, onJoin }: NowRoomCardProps) {
+  const isMounted = useIsMounted()
   const Icon = ICONS[room.type]
   const expiresLabel = formatDistanceFromNow(room.expiresAt)
 
@@ -77,7 +79,7 @@ export default function NowRoomCard({ room, isJoining, onJoin }: NowRoomCardProp
           </span>
           <span className="inline-flex items-center gap-2 text-white/70">
             <Clock className="h-4 w-4" />
-            Ends {expiresLabel}
+            Ends {isMounted ? expiresLabel : '...'}
           </span>
         </div>
 

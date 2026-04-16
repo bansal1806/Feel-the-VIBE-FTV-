@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CalendarClock, Lock, Send, Sparkle, BookOpen, X } from 'lucide-react'
 import { useCreateTimecapsule, useTimecapsules, type TimecapsulePayload } from '@/lib/hooks/useTimecapsules'
 import { formatDistanceFromNow, formatDistanceToNow } from '@/lib/utils/time'
+import { useIsMounted } from '../lib/hooks/useIsMounted'
 import { bus } from '@/lib/bus'
 import { createPortal } from 'react-dom'
 
@@ -108,6 +109,7 @@ function FilterTabs({ active, onChange }: { active: 'all' | 'upcoming' | 'publis
 }
 
 function CapsuleCard({ capsule }: { capsule: TimecapsulePayload }) {
+  const isMounted = useIsMounted()
   const isLocked = new Date(capsule.unlockAt).getTime() > Date.now()
   return (
     <motion.div 
@@ -130,7 +132,7 @@ function CapsuleCard({ capsule }: { capsule: TimecapsulePayload }) {
             <span className="rounded-full border border-neon-purple/50 bg-neon-purple/20 px-2 py-0.5 text-neon-purple">
               {capsule.audience}
             </span>
-            <span>• Unlocks {formatDistanceFromNow(capsule.unlockAt)}</span>
+            <span>• Unlocks {isMounted ? formatDistanceFromNow(capsule.unlockAt) : '...'}</span>
           </div>
           <h3 className="mt-2 text-xl font-semibold leading-tight gradient-text">{capsule.title}</h3>
           {capsule.description && <p className="mt-1 text-sm text-white/80 line-clamp-2">{capsule.description}</p>}
@@ -140,7 +142,7 @@ function CapsuleCard({ capsule }: { capsule: TimecapsulePayload }) {
             <div className="text-center text-white">
               <Lock className="mx-auto h-12 w-12 text-neon-yellow mb-3" />
               <p className="text-sm font-medium uppercase tracking-[0.2em] text-neon-yellow">Unlocks soon</p>
-              <p className="mt-1 text-xs text-white/60">{formatDistanceFromNow(capsule.unlockAt)}</p>
+              <p className="mt-1 text-xs text-white/60">{isMounted ? formatDistanceFromNow(capsule.unlockAt) : '...'}</p>
             </div>
           </div>
         )}
@@ -160,7 +162,7 @@ function CapsuleCard({ capsule }: { capsule: TimecapsulePayload }) {
           )}
           <span>By @{capsule.creator.alias}</span>
         </div>
-        <span>Created {formatDistanceToNow(capsule.createdAt)}</span>
+        <span>Created {isMounted ? formatDistanceToNow(capsule.createdAt) : '...'}</span>
       </div>
       <div className="space-y-3 px-4 py-4">
         {capsule.tags.length > 0 && (
